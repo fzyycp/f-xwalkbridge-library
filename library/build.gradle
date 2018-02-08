@@ -34,5 +34,5 @@ publish {
     artifactId = 'f-xwalkbridge-library'//项目名称
     publishVersion = '1.0.1'//版本号
     desc = 'this is an andriod library of xwalk bridge'//描述
-    website = 'https://github.com/fzyycp/f-popup-library'//github上的地址
+    website = 'https://github.com/fzyycp/f-xwalkbridge-library'//github上的地址
 }
