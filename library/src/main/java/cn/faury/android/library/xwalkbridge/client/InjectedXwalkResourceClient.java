@@ -6,48 +6,53 @@ import android.widget.Toast;
 import org.xwalk.core.XWalkResourceClient;
 import org.xwalk.core.XWalkView;
 
-public class InjectedXwalkResourceClient extends XWalkResourceClient {
+public class InjectedXWalkResourceClient extends XWalkResourceClient {
+
     /**
-     * JS调用Java
+     * 输出TAG
      */
-    private JsCallJava mJsCallJava;
+    private static final String TAG = InjectedXWalkResourceClient.class.getName();
 
+    /**
+     * 本地模式
+     */
+    private boolean localMode = false;
 
-    public static final String TAG = InjectedXwalkResourceClient.class.getName();
-
-    public InjectedXwalkResourceClient(XWalkView view,JsCallJava jsCallJava) {
+    /**
+     * 构造函数
+     *
+     * @param view webview对象
+     */
+    public InjectedXWalkResourceClient(XWalkView view) {
         super(view);
-        this.mJsCallJava = jsCallJava;
-//        this.swipeRefreshLayout = swipeRefreshLayout;
     }
 
-    @Override
-    public void onProgressChanged(XWalkView view, int progressInPercent) {
-
-//        if(swipeRefreshLayout!=null) {
-//            if (progressInPercent == 100) {
-//                swipeRefreshLayout.setRefreshing(false);
-//            } else if (!swipeRefreshLayout.isRefreshing()) {
-//                swipeRefreshLayout.setRefreshing(true);
-//            }
-//        }
-
-        super.onProgressChanged(view, progressInPercent);
+    /**
+     * 构造函数
+     *
+     * @param view    webview对象
+     * @param isLocal 本地模式
+     */
+    public InjectedXWalkResourceClient(XWalkView view, boolean isLocal) {
+        super(view);
+        this.localMode = isLocal;
     }
 
     @Override
     public void onReceivedLoadError(XWalkView view, int errorCode, String description, String failingUrl) {
-        Toast.makeText(view.getContext(),"软件安装包不完整，请卸载后重新安装！",Toast.LENGTH_LONG).show();
-        Log.e(TAG, String.format("onReceivedLoadError: errorCode=%s,description=%s,failingUrl=%s", errorCode,description,failingUrl));
-//        super.onReceivedLoadError(view, errorCode, description, failingUrl);
+        if(localMode) {
+            Toast.makeText(view.getContext(), "软件安装包不完整，请卸载后重新安装！", Toast.LENGTH_LONG).show();
+            Log.e(TAG, String.format("onReceivedLoadError: errorCode=%s,description=%s,failingUrl=%s", errorCode, description, failingUrl));
+        }else {
+            super.onReceivedLoadError(view, errorCode, description, failingUrl);
+        }
     }
 
     @Override
     public boolean shouldOverrideUrlLoading(XWalkView view, String url) {
-//        return super.shouldOverrideUrlLoading(view, url);
-        if(url!=null && url.trim().toLowerCase().startsWith("http")){
+        if (localMode && url != null && url.trim().toLowerCase().startsWith("http")) {
             return true;
         }
-        return super.shouldOverrideUrlLoading(view,url);
+        return super.shouldOverrideUrlLoading(view, url);
     }
 }

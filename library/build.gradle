@@ -2,13 +2,13 @@ apply plugin: 'com.android.library'
 apply plugin: 'com.novoda.bintray-release'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
 
     defaultConfig {
         minSdkVersion 19
-        targetSdkVersion 26
-        versionCode 101
-        versionName "1.0.1"
+        targetSdkVersion 27
+        versionCode 102
+        versionName "1.0.2"
     }
 
     buildTypes {
@@ -27,12 +27,27 @@ dependencies {
     compile 'cn.faury.android.library:f-xwalkcore-library:19.49.514.5'
 }
 
+uploadArchives {
+    apply plugin: 'maven'
+    repositories.mavenDeployer {
+        name = 'mavenCentralReleaseDeployer'
+        repository(url: "http://128.0.9.253:8081/nexus/content/repositories/releases/") {
+            authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
+        }
+        pom.version = "1.0.2"
+        pom.artifactId = "f-xwalkbridge-library"
+        pom.groupId = "cn.faury.android.library"
+        pom.name = "f-xwalkbridge-library"
+        pom.packaging = "aar"
+    }
+}
+
 publish {
 // gradlew clean build bintrayUpload -PbintrayUser=用户名 -PbintrayKey=apikey -PdryRun=false
     userOrg = 'faury'//bintray.com用户名
     groupId = 'cn.faury.android.library'//jcenter上的路径
     artifactId = 'f-xwalkbridge-library'//项目名称
-    publishVersion = '1.0.1'//版本号
+    publishVersion = '1.0.2'//版本号
     desc = 'this is an andriod library of xwalk bridge'//描述
     website = 'https://github.com/fzyycp/f-xwalkbridge-library'//github上的地址
 }

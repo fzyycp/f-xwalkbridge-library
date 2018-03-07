@@ -3,12 +3,15 @@ package cn.faury.android.library.xwalkbridge;
 import android.view.View;
 
 import org.xwalk.core.XWalkPreferences;
+import org.xwalk.core.XWalkResourceClient;
+import org.xwalk.core.XWalkUIClient;
 import org.xwalk.core.XWalkView;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
+import cn.faury.android.library.xwalkbridge.client.InjectedXWalkResourceClient;
 import cn.faury.android.library.xwalkbridge.client.InjectedXWalkUIClient;
-import cn.faury.android.library.xwalkbridge.client.InjectedXwalkResourceClient;
-import cn.faury.android.library.xwalkbridge.client.JsCallJava;
-import cn.faury.android.library.xwalkbridge.listen.XWalkViewListener;
 
 
 /**
@@ -16,10 +19,13 @@ import cn.faury.android.library.xwalkbridge.listen.XWalkViewListener;
  *
  * @author faury
  */
-public class ScriptAndStorage {
+public class XWalkBridgeHelper {
 
     public static final String DEFAULT_INJECTED_NAME = "Activity";
 
+    /**
+     * 初始化配置
+     */
     public static final void initPreferences() {
 //        // The key string to allow/disallow having universal access from file origin.
 //        // 置是否允许通过file url加载的Javascript可以访问其他的源,包括其他的文件和http,https等其他的源
@@ -36,7 +42,7 @@ public class ScriptAndStorage {
     /**
      * 桥接方式通用配置设置
      *
-     * @param webView
+     * @param webView webview对象
      */
     public static void setWebView(XWalkView webView) {
 
@@ -61,6 +67,7 @@ public class ScriptAndStorage {
 //        webView.setInitialScale(1);
 //
         // 屏蔽掉长按事件 因为webview长按时将会调用系统的复制控件
+        webView.setLongClickable(false);
         webView.setOnLongClickListener(new View.OnLongClickListener() {
             public boolean onLongClick(View v) {
                 return true;
@@ -85,62 +92,47 @@ public class ScriptAndStorage {
     /**
      * 初始化WebView
      *
-     * @param webView     初始化
-     * @param injectedCls 注入java类
+     * @param webView        webview对象
+     * @param uiClient       XWalkUIClient
+     * @param resourceClient XWalkResourceClient
      */
-    public static void injectWebView(XWalkView webView, Class injectedCls) {
-        injectWebView(webView, injectedCls, null);
+    public static void injectWebView(@Nonnull XWalkView webView
+            , @Nullable XWalkUIClient uiClient
+            , @Nullable XWalkResourceClient resourceClient) {
+        if (webView == null) {
+            return;
+        }
+        setWebView(webView);
+        if (uiClient != null) {
+            webView.setUIClient(uiClient);
+        }
+        if (resourceClient != null)
+            webView.setResourceClient(resourceClient);
     }
 
-//    /**
-//     * 初始化WebView
-//     *
-//     * @param webView     初始化
-//     * @param jsInterface JavaScript注入接口
-//     */
-//    public static void injectWebView(XWalkView webView, Object jsInterface) {
-//        injectWebView(webView, null, jsInterface, null);
-//    }
-//
-//    /**
-//     * 初始化WebView
-//     *
-//     * @param webView     初始化
-//     * @param injectedCls 注入java类
-//     * @param jsInterface JavaScript注入接口
-//     */
-//    public static void injectWebView(XWalkView webView, Class injectedCls, Object jsInterface, SwipeRefreshLayout swipeRefreshLayout) {
-//        if (webView == null) {
-//            return;
-//        }
-//        setWebView(webView);
-//        if (jsInterface != null) {
-//            webView.addJavascriptInterface(jsInterface, DEFAULT_INJECTED_NAME);
-//        }
-//        if (injectedCls != null) {
-//            JsCallJava mJsCallJava = new JsCallJava(InjectedXWalkUIClient.DEFAULT_INJECTED_NAME, injectedCls);
-//            webView.setUIClient(new InjectedXWalkUIClient(webView, mJsCallJava));
-//            webView.setResourceClient(new InjectedXwalkResourceClient(webView, mJsCallJava, swipeRefreshLayout));
-//        }
-//    }
+    /**
+     * 初始化WebView
+     *
+     * @param webView      webview对象
+     * @param injectedName 注入对象名称
+     * @param injectedCls  注入java类
+     * @param localMode    本地模式
+     */
+    public static void injectWebView(@Nonnull XWalkView webView, @Nullable String injectedName, @Nonnull Class injectedCls, boolean localMode) {
+        injectWebView(webView
+                , new InjectedXWalkUIClient(webView, injectedName, injectedCls)
+                , new InjectedXWalkResourceClient(webView, localMode));
+    }
 
     /**
      * 初始化WebView
      *
      * @param webView     初始化
      * @param injectedCls 注入java类
-     * @param listener    监听浏览器事件
+     * @param localMode   本地模式
      */
-    public static void injectWebView(XWalkView webView, Class injectedCls, XWalkViewListener listener) {
-        if (webView == null) {
-            return;
-        }
-        setWebView(webView);
-        if (injectedCls != null) {
-            JsCallJava mJsCallJava = new JsCallJava(InjectedXWalkUIClient.DEFAULT_INJECTED_NAME, injectedCls);
-            webView.setUIClient(new InjectedXWalkUIClient(webView, mJsCallJava, listener));
-            webView.setResourceClient(new InjectedXwalkResourceClient(webView, mJsCallJava));
-        }
+    public static void injectWebView(XWalkView webView, Class injectedCls, boolean localMode) {
+        injectWebView(webView, DEFAULT_INJECTED_NAME, injectedCls, localMode);
     }
 
     /**
@@ -153,7 +145,6 @@ public class ScriptAndStorage {
             return;
         }
         webView.load("about:blank", null);
-//        webView.removeAllViews();
         webView.onDestroy();
     }
 
@@ -162,7 +153,7 @@ public class ScriptAndStorage {
      *
      * @param enable 是否启动
      */
-    public static void enableWebContentsDebugging(boolean enable) {
+    public static void enableDebugging(boolean enable) {
         // The key string to enable/disable remote debugging.
         // 开启调式,支持谷歌浏览器调式
         XWalkPreferences.setValue(XWalkPreferences.REMOTE_DEBUGGING, enable);

@@ -12,11 +12,10 @@ package cn.faury.android.library.xwalkbridge.client;
 import org.xwalk.core.XWalkView;
 
 import java.lang.ref.WeakReference;
+import java.util.Locale;
 
 /**
  * js回调
- *
- *  @author faury
  */
 public class JsCallback {
     private static final String CALLBACK_JS_FORMAT = "javascript:%s.callback(%d, %d %s);";
@@ -52,8 +51,7 @@ public class JsCallback {
                 sb.append("\"");
             }
         }
-        String execJs = String.format(CALLBACK_JS_FORMAT, mInjectedName, mIndex, mIsPermanent, sb.toString());
-        //      Log.d("JsCallBack", execJs);
+        String execJs = String.format(Locale.getDefault(),CALLBACK_JS_FORMAT, mInjectedName, mIndex, mIsPermanent, sb.toString());
         mWebViewRef.get().load(execJs,null);
         mCouldGoOn = mIsPermanent > 0;
     }

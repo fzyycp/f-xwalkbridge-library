@@ -22,14 +22,14 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.HashMap;
 
+import cn.faury.android.library.xwalkbridge.XWalkBridgeHelper;
+
 
 /**
  * js回调java
- *
- *  @author faury
  */
 public class JsCallJava {
-    private final static String TAG = "JsCallJava";
+    private final static String TAG = JsCallJava.class.getName();
     private final static String RETURN_RESULT_FORMAT = "{\"code\": %d, \"result\": %s}";
     private HashMap<String, Method> mMethodsMap;
     private String mInjectedName;
@@ -43,7 +43,7 @@ public class JsCallJava {
     public JsCallJava(final String injectedName,final Class injectedCls) {
         try {
             if (injectedName==null || injectedName.length()==0) {
-                mInjectedName = InjectedXWalkUIClient.DEFAULT_INJECTED_NAME;
+                mInjectedName = XWalkBridgeHelper.DEFAULT_INJECTED_NAME;
             } else {
                 mInjectedName = injectedName;
             }
@@ -76,7 +76,7 @@ public class JsCallJava {
             sb.append(")})(window);");
             mPreloadInterfaceJS = sb.toString();
         } catch (Exception e) {
-//            Log.e(TAG, "init js error:" + e.getMessage());
+            Log.e(TAG, "init js error:" + e.getMessage());
         }
     }
 
