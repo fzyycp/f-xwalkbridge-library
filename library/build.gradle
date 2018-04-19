@@ -7,8 +7,8 @@ android {
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 27
-        versionCode 102
-        versionName "1.0.2"
+        versionCode 104
+        versionName "1.0.4"
     }
 
     buildTypes {
@@ -34,7 +34,7 @@ uploadArchives {
         repository(url: "http://128.0.9.253:8081/nexus/content/repositories/releases/") {
             authentication(userName: NEXUS_USERNAME, password: NEXUS_PASSWORD)
         }
-        pom.version = "1.0.2"
+        pom.version = "1.0.4"
         pom.artifactId = "f-xwalkbridge-library"
         pom.groupId = "cn.faury.android.library"
         pom.name = "f-xwalkbridge-library"
@@ -47,7 +47,7 @@ publish {
     userOrg = 'faury'//bintray.com用户名
     groupId = 'cn.faury.android.library'//jcenter上的路径
     artifactId = 'f-xwalkbridge-library'//项目名称
-    publishVersion = '1.0.2'//版本号
+    publishVersion = '1.0.4'//版本号
     desc = 'this is an andriod library of xwalk bridge'//描述
     website = 'https://github.com/fzyycp/f-xwalkbridge-library'//github上的地址
 }

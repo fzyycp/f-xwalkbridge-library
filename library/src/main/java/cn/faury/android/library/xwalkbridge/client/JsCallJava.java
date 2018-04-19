@@ -71,7 +71,7 @@ public class JsCallJava {
             sb.append(mInjectedName);
             sb.append(
                     " call error, code:\"+g.code+\", message:\"+g.result}return g.result};Object.getOwnPropertyNames(a).forEach(function(d){var c=a[d];if(typeof c===\"function\"&&d!==\"callback\"){a[d]=function(){return c.apply(a,[d].concat(Array.prototype.slice.call(arguments,0)))}}});");
-            sb.append(String.format("b.%s=a;",mInjectedName));
+            sb.append(String.format("b.%s=b.%s || a;",mInjectedName,mInjectedName));
             sb.append(String.format("console.log(\"HostApp %s initialization end\"",mInjectedName));
             sb.append(")})(window);");
             mPreloadInterfaceJS = sb.toString();
